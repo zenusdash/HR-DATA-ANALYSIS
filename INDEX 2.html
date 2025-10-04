@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>HR Manager Portal</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.container, .confirmation, .dashboard {
+    background: #f8d286;
+    border-radius: 16px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+    padding: 40px 50px;
+    max-width: 600px;
+    width: 100%;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+}
+h2 {
+    color: #4a148c;
+    margin-bottom: 30px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+    text-align: left;
+}
+label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #4a148c;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+input {
+    width: 100%;
+    padding: 12px 15px;
+    font-size: 15px;
+    border-radius: 10px;
+    border: 2px solid #ddd;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+input:focus {
+    border-color: #764ba2;
+    box-shadow: 0 0 8px rgba(118, 75, 162, 0.6);
+}
+.btn {
+    background: linear-gradient(90deg, #8e2de2, #4a00e0);
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 50px;
+    cursor: pointer;
+    margin: 10px;
+    transition: background 0.4s ease-in-out;
+    box-shadow: 0 5px 15px rgba(138, 43, 226, 0.4);
+}
+.btn:hover:not(:disabled) {
+    background: linear-gradient(90deg, #4a00e0, #8e2de2);
+    box-shadow: 0 8px 20px rgba(138, 43, 226, 0.6);
+}
+
+/* Topbar */
+.topbar {
+    background: #4a148c;
+    color: white;
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 10px 10px 0 0;
+    margin: -40px -50px 30px -50px;
+}
+.logo {
+    font-size: 18px;
+    font-weight: bold;
+}
+.profile {
+    position: relative;
+    cursor: pointer;
+}
+.profile img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+.dropdown {
+    position: absolute;
+    right: 0;
+    top: 50px;
+    background: white;
+    color: #333;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    padding: 10px;
+    width: 200px;
+    display: none;
+}
+.dropdown p {
+    margin: 5px 0;
+    font-size: 14px;
+}
+.dropdown button {
+    width: 100%;
+    background: #dc3545;
+    margin-top: 10px;
+}
+.dropdown button:hover {
+    background: #b52a38;
+}
+</style>
+</head>
+<body>
+
+<!-- Login Form -->
+<div class="container" id="loginContainer">
+    <h2>HR Manager Login</h2>
+    <form id="loginForm">
+        <div class="form-group">
+            <label for="hrUsername">Username</label>
+            <input type="text" id="hrUsername" required>
+        </div>
+        <div class="form-group">
+            <label for="hrPassword">Password</label>
+            <input type="password" id="hrPassword" required>
+        </div>
+        <button type="submit" class="btn">Login</button>
+        <div id="loginError" style="color:red; display:none; margin-top:10px;">Invalid credentials. Please try again.</div>
+    </form>
+    <button class="btn" id="showRegisterBtn" style="margin-top: 20px;">New HR? Register</button>
+</div>
+
+<!-- Registration Form -->
+<div class="container" id="registerContainer" style="display:none;">
+    <h2>HR Manager Registration</h2>
+    <form id="registerForm">
+        <div class="form-group">
+            <label for="regFirstName">First Name</label>
+            <input type="text" id="regFirstName" required>
+        </div>
+        <div class="form-group">
+            <label for="regLastName">Last Name</label>
+            <input type="text" id="regLastName" required>
+        </div>
+        <div class="form-group">
+            <label for="regMailId">Mail ID</label>
+            <input type="email" id="regMailId" required>
+        </div>
+        <div class="form-group">
+            <label for="regUsername">Username</label>
+            <input type="text" id="regUsername" required>
+        </div>
+        <div class="form-group">
+            <label for="regPassword">Password</label>
+            <input type="password" id="regPassword" required>
+        </div>
+        <button type="submit" class="btn">Register</button>
+        <div id="registerError" style="color:red; display:none; margin-top:10px;">Username already exists.</div>
+    </form>
+</div>
+
+<!-- Confirmation Page -->
+<div class="confirmation" id="confirmationContainer" style="display:none;">
+    <h2>Registration Successful</h2>
+    <p>Your HR profile has been created successfully.</p>
+    <p>You will be redirected to the login page shortly.</p>
+</div>
+
+<!-- Dashboard -->
+<div class="dashboard" id="dashboardContainer" style="display:none;">
+  <div class="topbar">
+    <div class="logo"></div>
+        <div class="profile" onclick="toggleDropdown()">
+            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="HR Profile" />
+            <div id="dropdownMenu" class="dropdown">
+                <p><strong>Name:</strong> <span id="profileName">HR Manager</span></p>
+                <p><strong>Email:</strong> <span id="profileEmail">hr@example.com</span></p>
+                <button onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+    <h2 id="welcomeText">Welcome HR Manager</h2>
+    <p>Select an option below:</p>
+    <button class="btn" onclick="openForm()">Add Employee Details</button>
+    <button class="btn" onclick="openDashboard()">View Dashboard</button>
+</div>
+
+<script>
+const loginContainer = document.getElementById('loginContainer');
+const registerContainer = document.getElementById('registerContainer');
+const dashboardContainer = document.getElementById('dashboardContainer');
+const confirmationContainer = document.getElementById('confirmationContainer');
+const showRegisterBtn = document.getElementById('showRegisterBtn');
+
+const welcomeText = document.getElementById("welcomeText");
+const profileName = document.getElementById("profileName");
+const profileEmail = document.getElementById("profileEmail");
+
+let currentUser = null;
+
+// Show registration form
+showRegisterBtn.addEventListener('click', function() {
+    loginContainer.style.display = 'none';
+    registerContainer.style.display = 'block';
+});
+
+// Registration logic
+document.getElementById('registerForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const users = JSON.parse(localStorage.getItem('hrUsers') || '{}');
+    const username = document.getElementById('regUsername').value;
+    if (users[username]) {
+        document.getElementById('registerError').style.display = 'block';
+        return;
+    }
+    users[username] = {
+        firstName: document.getElementById('regFirstName').value,
+        lastName: document.getElementById('regLastName').value,
+        mailId: document.getElementById('regMailId').value,
+        password: document.getElementById('regPassword').value
+    };
+    localStorage.setItem('hrUsers', JSON.stringify(users));
+    registerContainer.style.display = 'none';
+    document.getElementById('registerError').style.display = 'none';
+    confirmationContainer.style.display = 'block';
+    setTimeout(() => {
+        confirmationContainer.style.display = 'none';
+        loginContainer.style.display = 'block';
+        document.getElementById('registerForm').reset();
+    }, 2000);
+});
+
+// Login logic
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const username = document.getElementById('hrUsername').value;
+    const password = document.getElementById('hrPassword').value;
+
+    // Default admin user
+    if (username === 'hrmanager' && password === 'password123') {
+        currentUser = { firstName: "HR", lastName: "Manager", mailId: "hr@example.com" };
+        showDashboard();
+        return;
+    }
+
+    const users = JSON.parse(localStorage.getItem('hrUsers') || '{}');
+    if (users[username] && users[username].password === password) {
+        currentUser = users[username];
+        showDashboard();
+        return;
+    }
+    document.getElementById('loginError').style.display = 'block';
+});
+
+// Show dashboard with personalized info
+function showDashboard() {
+    loginContainer.style.display = 'none';
+    dashboardContainer.style.display = 'block';
+    welcomeText.textContent = `Welcome ${currentUser.firstName}`;
+    profileName.textContent = `${currentUser.firstName} ${currentUser.lastName}`;
+    profileEmail.textContent = currentUser.mailId;
+}
+
+// Open Employee Details Form
+function openForm() {
+    window.open("https://forms.gle/Th4og1jki95JAWXs9", "_blank");
+}
+
+// Open Dashboard
+function openDashboard() {
+    window.open("https://docs.google.com/spreadsheets/d/1wfV8sL0NmNmvieFOefvQuHrTXkHpjRodlmQbpvCaK60/edit?usp=sharing", "_blank");
+}
+
+// Logout
+function logout() {
+    dashboardContainer.style.display = 'none';
+    loginContainer.style.display = 'block';
+    document.getElementById('hrUsername').value = "";
+    document.getElementById('hrPassword').value = "";
+    currentUser = null;
+}
+
+// Dropdown Toggle
+function toggleDropdown() {
+    const menu = document.getElementById("dropdownMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+// Close dropdown when clicking outside
+document.addEventListener("click", function(event) {
+    const profile = document.querySelector(".profile");
+    if (profile && !profile.contains(event.target)) {
+        document.getElementById("dropdownMenu").style.display = "none";
+    }
+});
+</script>
+</body>
+</html>
